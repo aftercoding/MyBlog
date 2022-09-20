@@ -1,4 +1,4 @@
-package com.sean.config;
+package com.sean.domain.config;
 
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
