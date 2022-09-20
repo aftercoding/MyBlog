@@ -3,16 +3,20 @@ package com.sean.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sean.constants.SystemConstants;
 import com.sean.domain.ResponseResult;
 import com.sean.domain.entity.Comment;
 import com.sean.domain.vo.CommentVo;
 import com.sean.domain.vo.PageVo;
+import com.sean.enums.AppHttpCodeEnum;
+import com.sean.exception.SystemException;
 import com.sean.mapper.CommentMapper;
 import com.sean.service.CommentService;
 import com.sean.service.UserService;
 import com.sean.utils.BeanCopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -28,16 +32,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private UserService userService;
     @Override
-    public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize) {
+    public ResponseResult commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
         //查询 对应 文章的跟评论
 
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
 
-        //对articleId进行判断
-        queryWrapper.eq(Comment::getArticleId, articleId);
+        //如果为文章的评论的时候，对articleId进行判断,
+        queryWrapper.eq(SystemConstants.ARTICLE_COMMENT.equals(commentType), Comment::getArticleId, articleId);
 
         //根评论的rootID -1
         queryWrapper.eq(Comment::getRootId, -1);
+
+        //评论类型
+        queryWrapper.eq(Comment::getType, commentType);
 
         //分页查询
         Page<Comment> page = new Page<>(pageNum, pageSize);
@@ -51,6 +58,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             commentVo.setChildren(children);
         }
         return ResponseResult.okResult(new PageVo(commentVoList, page.getTotal()));
+    }
+
+    @Override
+    public ResponseResult addComment(Comment comment) {
+        //评论内容不能为空。注意这里创建了一个枚举类型CONTENT_NOT_NULL
+        if(!StringUtils.hasText(comment.getContent())){
+            throw new SystemException(AppHttpCodeEnum.CONTENT_NOT_NULL);
+        }
+        save(comment);
+        return ResponseResult.okResult();
     }
 
 
@@ -67,7 +84,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<CommentVo> commentVos = toCommentList(comments);
         return commentVos;
     }
-
 
     private List<CommentVo> toCommentList(List<Comment> list){
         List<CommentVo> commentVos = BeanCopyUtils.copyBeanList(list, CommentVo.class);

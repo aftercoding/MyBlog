@@ -1,5 +1,7 @@
 package com.sean.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -34,11 +36,14 @@ public class Comment  {
     private Long toCommentUserId;
     //回复目标评论id
     private Long toCommentId;
-    
+
+    //自动填充，插入的时候mybatisplus自动填充
+    @TableField(fill = FieldFill.INSERT)
     private Long createBy;
-    
+
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
-    
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
     
     private Date updateTime;

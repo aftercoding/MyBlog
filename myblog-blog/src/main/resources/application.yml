@@ -20,3 +20,7 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
       id-type: auto
+oss:
+  accessKey: R3VHmuD8aPWeyYx16OXKXLzVgbRPc8x-YWUWCKjc
+  secretKey: YwLh3TW-2ebLNAoip8wMcq367vuXE77E0j3REbg8
+  bucket: aftercoding
