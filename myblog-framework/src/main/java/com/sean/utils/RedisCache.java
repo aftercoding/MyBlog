@@ -78,6 +78,11 @@ public class RedisCache
         return operation.get(key);
     }
 
+    public void incrementCacheMapValue(String key, String hKey, int value){
+//        redisTemplate.opsForHash().increment(key, hKey, value);
+          redisTemplate.boundHashOps(key).increment(hKey, value);
+    }
+
     /**
      * 删除单个对象
      *

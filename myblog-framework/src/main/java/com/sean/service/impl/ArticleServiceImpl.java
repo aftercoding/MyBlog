@@ -15,12 +15,15 @@ import com.sean.mapper.ArticleMapper;
 import com.sean.service.ArticleService;
 import com.sean.service.CategoryService;
 import com.sean.utils.BeanCopyUtils;
+import com.sean.utils.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.sean.constants.ApplicationConstans.REDIS_VIEWCOUNT_KEY;
 
 /**
  * @description: some desc
@@ -33,6 +36,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private RedisCache redisCache;
 
     //查询热门文章 封装成ResponseResult 返回
     @Override
@@ -90,11 +96,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 //            Category category = categoryService.getById(article.getCategoryId());
 //            article.setCategoryName(category.getName());
 //        }
+        //从redis中获取viewCount, 并刷新到页面
+        for (Article article : articles) {
+            Integer viewCount = redisCache.getCacheMapValue(REDIS_VIEWCOUNT_KEY, article.getId().toString());
+            article.setViewCount(viewCount.longValue());
+        }
 
         // 封装成查询结果
         List<ArticleListVo> articleListVos = BeanCopyUtils.copyBeanList(page.getRecords(), ArticleListVo.class);
 
         PageVo pageVo = new PageVo(articleListVos, page.getTotal());
+
+
+
         return ResponseResult.okResult(pageVo);
     }
 
@@ -102,6 +116,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public ResponseResult getArticleDetail(Long id) {
         //根据id查询文章
         Article article = getById(id);
+
+        //从redis中获取viewCount, 并刷新到页面
+        Integer viewCount = redisCache.getCacheMapValue(REDIS_VIEWCOUNT_KEY, id.toString());
+        article.setViewCount(viewCount.longValue());
+
         //转换成vo
         ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
 
@@ -113,5 +132,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         //封装相应返回
         return ResponseResult.okResult(articleDetailVo);
+    }
+
+    @Override
+    public ResponseResult updateViewCount(Long id) {
+        //更新redis中对应的id浏览量
+        redisCache.incrementCacheMapValue(REDIS_VIEWCOUNT_KEY, id.toString(), 1);
+        return ResponseResult.okResult();
     }
 }
