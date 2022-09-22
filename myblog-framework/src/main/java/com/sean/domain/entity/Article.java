@@ -66,5 +66,6 @@ public class Article {
         this.id = id;
         this.viewCount = viewCount;
     }
+
 }
 

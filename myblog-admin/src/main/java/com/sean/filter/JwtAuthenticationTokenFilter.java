@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.sean.constants.ApplicationConstans.REDIS_BLOG_LOGIN_KEY;
+import static com.sean.constants.ApplicationConstans.REDIS_ADMIN_LOGIN_KEY;
 
 /**
  * @description: some desc
@@ -58,7 +58,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         String userId = claims.getSubject();
         //从redis中获取用户信息
-        LoginUser loginUser = redisCache.getCacheObject(REDIS_BLOG_LOGIN_KEY + userId);
+        LoginUser loginUser = redisCache.getCacheObject(REDIS_ADMIN_LOGIN_KEY + userId);
         if(Objects.isNull(loginUser)){
             ResponseResult result = ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
             WebUtils.renderString(httpServletResponse, JSON.toJSONString(result));

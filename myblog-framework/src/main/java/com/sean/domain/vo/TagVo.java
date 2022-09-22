@@ -8,14 +8,12 @@ import lombok.NoArgsConstructor;
  * @description: some desc
  * @author: congjun
  * @email: 66@7788.com
- * @date: 2022-09-18 14:12
+ * @date: 2022-09-22 16:04
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryVo {
+public class TagVo {
     private Long id;
     private String name;
-
-    private String description;
 }

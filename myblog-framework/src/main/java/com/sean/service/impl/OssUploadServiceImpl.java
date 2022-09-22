@@ -35,7 +35,7 @@ public class OssUploadServiceImpl implements UploadService {
     private String bucket;
 
     @Override
-    public ResponseResult uploadImg(MultipartFile img) {
+    public ResponseResult uploadImg(MultipartFile img)  {
         //Todo 判断文件类型或者文件大小
         //获取原始文件名
         String originFileName = img.getOriginalFilename();
@@ -48,6 +48,7 @@ public class OssUploadServiceImpl implements UploadService {
         String url = uploadOSS(img, filePath);
         return ResponseResult.okResult(url);
     }
+
 
     private  String uploadOSS( MultipartFile imgFile, String filePath) {
         //构造一个带指定 Region 对象的配置类
