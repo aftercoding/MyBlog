@@ -3,6 +3,7 @@ package com.sean.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sean.domain.ResponseResult;
 import com.sean.domain.entity.Category;
+import com.sean.domain.vo.PageVo;
 
 
 /**
@@ -17,5 +18,6 @@ public interface CategoryService extends IService<Category> {
 
     ResponseResult listAllCategory();
 
+    PageVo selectCategoryPage(Category category, Integer pageNum, Integer pageSize);
 }
 
